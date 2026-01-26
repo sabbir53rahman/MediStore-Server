@@ -12,3 +12,126 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+// =====================
+// ENUMS
+// =====================
+
+enum Role {
+  CUSTOMER
+  SELLER
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  BANNED
+}
+
+enum OrderStatus {
+  PLACED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+model Category {
+  id        String     @id @default(uuid())
+  name      String     @unique
+  medicines Medicine[]
+
+  createdAt DateTime @default(now())
+}
+
+model Medicine {
+  id          String  @id @default(uuid())
+  name        String
+  description String
+  price       Float
+  stock       Int
+  imageUrl    String?
+
+  sellerId   String
+  categoryId String
+
+  category   Category    @relation(fields: [categoryId], references: [id])
+  reviews    Review[]
+  orderItems OrderItem[]
+  cartItems  CartItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sellerId])
+  @@index([categoryId])
+}
+
+// =====================
+// CART
+// =====================
+
+model Cart {
+  id     String @id @default(uuid())
+  userId String @unique
+
+  items CartItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CartItem {
+  id         String @id @default(uuid())
+  cartId     String
+  medicineId String
+  quantity   Int
+
+  cart     Cart     @relation(fields: [cartId], references: [id])
+  medicine Medicine @relation(fields: [medicineId], references: [id])
+}
+
+// =====================
+// ORDERS
+// =====================
+
+model Order {
+  id          String      @id @default(uuid())
+  userId      String
+  status      OrderStatus @default(PLACED)
+  address     String
+  totalAmount Float
+
+  items OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrderItem {
+  id         String @id @default(uuid())
+  orderId    String
+  medicineId String
+  quantity   Int
+  price      Float // snapshot price
+
+  order    Order    @relation(fields: [orderId], references: [id])
+  medicine Medicine @relation(fields: [medicineId], references: [id])
+}
+
+// =====================
+// REVIEWS
+// =====================
+
+model Review {
+  id      String  @id @default(uuid())
+  rating  Int
+  comment String?
+
+  userId     String
+  medicineId String
+
+  medicine Medicine @relation(fields: [medicineId], references: [id])
+
+  createdAt DateTime @default(now())
+}
