@@ -15,6 +15,20 @@ const createCategory = async (
   }
 };
 
+const getAllCategories = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const result = await categoryService.getAllCategories();
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const categoryController = {
   createCategory,
+  getAllCategories,
 };
