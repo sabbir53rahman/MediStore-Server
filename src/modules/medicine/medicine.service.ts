@@ -2,9 +2,15 @@ import { Medicine } from "../../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
 
 const createMedicine = async (
-  data: Omit<Medicine, "id" | "createdAt" | "updatedAt">,
+  data: Omit<Medicine, "id" | "createdAt" | "updatedAt" | "sellerId">,
+  userId: string,
 ) => {
-  const result = prisma.medicine.create({ data });
+  const result = prisma.medicine.create({
+    data: {
+      ...data,
+      sellerId: userId,
+    },
+  });
   return result;
 };
 

@@ -7,7 +7,14 @@ const createMedicine = async (
   next: NextFunction,
 ) => {
   try {
-    const result = await medicineService.createMedicine(req.body);
+    const user = req.user;
+
+    if (!user) {
+      return res.status(400).json({
+        error: "Unsuthorized! ",
+      });
+    }
+    const result = await medicineService.createMedicine(req.body, user.id);
     return res.status(201).json(result);
   } catch (error: any) {
     next(error);
