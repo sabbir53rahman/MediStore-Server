@@ -5,6 +5,8 @@ import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth";
 import cors from "cors";
 import { orderRouter } from "./modules/order/order.router";
+import { reviewRouter } from "./modules/review/review.router";
+import { cartRouter } from "./modules/cart/cart.router";
 
 const app: Application = express();
 
@@ -24,6 +26,10 @@ app.use("/api/medicines", medicineRouter);
 app.use("/api/categories", categoryRouter);
 
 app.use("/api/orders", orderRouter);
+
+app.use("/api/reviews", reviewRouter);
+
+app.use("/api/carts", cartRouter);
 
 app.get("/", (req, res) => {
   res.send("Hello, from medistore");
