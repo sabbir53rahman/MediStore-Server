@@ -71,8 +71,14 @@ const deleteMedicine = async (
   next: NextFunction,
 ) => {
   try {
-    await medicineService.deleteMedicine(req.params.id as string);
-    res.status(204).send();
+    const { id } = req.params;
+
+    await medicineService.deleteMedicine(id as string);
+
+    return res.status(200).json({
+      success: true,
+      message: "Medicine deleted successfully",
+    });
   } catch (error) {
     next(error);
   }
