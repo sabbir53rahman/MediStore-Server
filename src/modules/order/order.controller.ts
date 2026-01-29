@@ -6,7 +6,11 @@ const createOrder = async (req: Request, res: Response, next: NextFunction) => {
     const user = req.user!;
     const result = await orderService.createOrder(user.id, req.body);
 
-    res.status(201).json(result);
+    res.status(200).json({
+      success: true,
+      message: "Order created successfully",
+      data: result,
+    });
   } catch (error) {
     next(error);
   }
@@ -17,7 +21,11 @@ const getMyOrders = async (req: Request, res: Response, next: NextFunction) => {
     const user = req.user!;
     const result = await orderService.getMyOrders(user.id);
 
-    res.status(200).json(result);
+    res.status(200).json({
+      success: true,
+      message: "Order received successfully",
+      data: result,
+    });
   } catch (error) {
     next(error);
   }
@@ -35,7 +43,11 @@ const getOrderById = async (
       user.id,
     );
 
-    res.status(200).json(result);
+    res.status(200).json({
+      success: true,
+      message: "Order received successfully",
+      data: result,
+    });
   } catch (error) {
     next(error);
   }
@@ -50,7 +62,11 @@ const getSellerOrders = async (
     const sellerId = req.user!.id;
     const result = await orderService.getSellerOrders(sellerId);
 
-    res.status(200).json(result);
+    res.status(200).json({
+      success: true,
+      message: "Seller orders received successfully",
+      data: result,
+    });
   } catch (error) {
     next(error);
   }
@@ -67,7 +83,11 @@ const updateOrderStatus = async (
       req.body.status,
     );
 
-    res.status(200).json(result);
+    res.status(200).json({
+      success: true,
+      message: "Order status updated successfully",
+      data: result,
+    });
   } catch (error) {
     next(error);
   }

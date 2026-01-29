@@ -15,7 +15,11 @@ const createMedicine = async (
       });
     }
     const result = await medicineService.createMedicine(req.body, user.id);
-    return res.status(201).json(result);
+    res.status(200).json({
+      success: true,
+      message: "Medicine created successfully",
+      data: result,
+    });
   } catch (error: any) {
     next(error);
   }
@@ -28,7 +32,11 @@ const getAllMedicines = async (
 ) => {
   try {
     const result = await medicineService.getAllMedicines(req.query);
-    res.status(200).json(result);
+    res.status(200).json({
+      success: true,
+      message: "Medicine received successfully",
+      data: result,
+    });
   } catch (error) {
     next(error);
   }
@@ -43,7 +51,11 @@ const getMedicineById = async (
     const result = await medicineService.getMedicineById(
       req.params.id as string,
     );
-    res.status(200).json(result);
+    res.status(200).json({
+      success: true,
+      message: "Medicine received successfully",
+      data: result,
+    });
   } catch (error) {
     next(error);
   }
@@ -59,7 +71,11 @@ const updateMedicine = async (
       req.params.id as string,
       req.body,
     );
-    res.status(200).json(result);
+    res.status(200).json({
+      success: true,
+      message: "Medicine updated successfully",
+      data: result,
+    });
   } catch (error) {
     next(error);
   }
@@ -78,6 +94,7 @@ const deleteMedicine = async (
     return res.status(200).json({
       success: true,
       message: "Medicine deleted successfully",
+      data: null,
     });
   } catch (error) {
     next(error);

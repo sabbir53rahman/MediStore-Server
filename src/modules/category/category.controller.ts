@@ -9,7 +9,11 @@ const createCategory = async (
   try {
     const result = await categoryService.createCategory(req.body);
 
-    res.status(201).json(result);
+    res.status(200).json({
+      success: true,
+      message: "Category created successfully",
+      data: result,
+    });
   } catch (error) {
     next(error);
   }
@@ -22,7 +26,11 @@ const getAllCategories = async (
 ) => {
   try {
     const result = await categoryService.getAllCategories();
-    res.status(200).json(result);
+    res.status(200).json({
+      success: true,
+      message: "Category received successfully",
+      data: result,
+    });
   } catch (error) {
     next(error);
   }
