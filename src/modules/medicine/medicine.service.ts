@@ -58,7 +58,24 @@ const getMedicineById = async (id: string) => {
     },
   });
 };
-const updateMedicine = async (id: string, data: Partial<Medicine>) => {
+
+const updateMedicine = async (
+  id: string,
+  data: Partial<Medicine>,
+  userId: string,
+) => {
+  const medicine = await prisma.medicine.findUnique({
+    where: { id },
+  });
+
+  if (!medicine) {
+    throw new Error("Medicine not found");
+  }
+
+  if (medicine.sellerId !== userId) {
+    throw new Error("You are not allowed to update this medicine");
+  }
+
   return prisma.medicine.update({
     where: { id },
     data,

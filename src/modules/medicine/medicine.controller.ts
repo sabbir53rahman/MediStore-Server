@@ -67,10 +67,14 @@ const updateMedicine = async (
   next: NextFunction,
 ) => {
   try {
+    const userId = req.user?.id;
+
     const result = await medicineService.updateMedicine(
       req.params.id as string,
       req.body,
+      userId as string,
     );
+
     res.status(200).json({
       success: true,
       message: "Medicine updated successfully",
