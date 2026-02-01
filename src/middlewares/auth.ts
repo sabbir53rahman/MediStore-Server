@@ -19,11 +19,12 @@ declare global {
 const auth = (...roles: Role[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
+      console.log(req.headers);
       //get user session
       const session = await betterAuth.api.getSession({
         headers: req.headers as any,
       });
-
+      console.log(session);
       if (!session) {
         return res.status(401).json({
           success: false,

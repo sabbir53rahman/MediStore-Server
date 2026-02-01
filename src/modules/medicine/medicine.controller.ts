@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { medicineService } from "./medicine.service";
+import paginationSortingHelper from "../../helpers/pageinationSorHelper";
 
 const createMedicine = async (
   req: Request,
@@ -31,7 +32,26 @@ const getAllMedicines = async (
   next: NextFunction,
 ) => {
   try {
-    const result = await medicineService.getAllMedicines(req.query);
+    const { search, categoryId, minPrice, maxPrice } = req.query;
+
+    const searchString = typeof search === "string" ? search : undefined;
+
+    const { page, limit, skip, sortBy, sortOrder } = paginationSortingHelper(
+      req.query,
+    );
+
+    const result = await medicineService.getAllMedicines({
+      search: searchString as string,
+      categoryId: categoryId as string,
+      minPrice: minPrice as string,
+      maxPrice: maxPrice as string,
+      page,
+      limit,
+      skip,
+      sortBy,
+      sortOrder,
+    });
+
     res.status(200).json({
       success: true,
       message: "Medicine received successfully",
@@ -55,6 +75,28 @@ const getMedicineById = async (
       success: true,
       message: "Medicine received successfully",
       data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getMedicinesByCategory = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { categoryId } = req.params;
+
+    const medicines = await medicineService.getMedicinesByCategory(
+      categoryId as string,
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Medicines received successfully",
+      data: medicines,
     });
   } catch (error) {
     next(error);
@@ -109,6 +151,7 @@ export const medicineController = {
   createMedicine,
   getAllMedicines,
   getMedicineById,
+  getMedicinesByCategory,
   updateMedicine,
   deleteMedicine,
 };

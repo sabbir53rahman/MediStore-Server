@@ -14,40 +14,94 @@ const createMedicine = async (
   return result;
 };
 
-const getAllMedicines = async (filters: any) => {
-  const { search, categoryId, minPrice, maxPrice } = filters;
-
-  const where: any = {};
+const getAllMedicines = async ({
+  search,
+  categoryId,
+  minPrice,
+  maxPrice,
+  page,
+  limit,
+  skip,
+  sortBy,
+  sortOrder,
+}: {
+  search?: string;
+  categoryId?: string;
+  minPrice?: string;
+  maxPrice?: string;
+  page: number;
+  limit: number;
+  skip: number;
+  sortBy: string;
+  sortOrder: string;
+}) => {
+  const andConditions: any[] = [];
 
   if (search) {
-    where.name = {
-      contains: search,
-      mode: "insensitive",
-    };
+    andConditions.push({
+      name: {
+        contains: search,
+        mode: "insensitive",
+      },
+    });
   }
 
   if (categoryId) {
-    where.categoryId = categoryId;
+    andConditions.push({
+      categoryId,
+    });
   }
 
   if (minPrice || maxPrice) {
-    where.price = {};
+    const priceCondition: any = {};
 
     if (minPrice) {
-      where.price.gte = Number(minPrice);
+      priceCondition.gte = Number(minPrice);
     }
 
     if (maxPrice) {
-      where.price.lte = Number(maxPrice);
+      priceCondition.lte = Number(maxPrice);
     }
+
+    andConditions.push({
+      price: priceCondition,
+    });
   }
 
-  return prisma.medicine.findMany({
+  const where =
+    andConditions.length > 0
+      ? {
+          AND: andConditions,
+        }
+      : {};
+
+  const medicines = await prisma.medicine.findMany({
+    take: limit,
+    skip,
     where,
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
     include: {
       category: true,
     },
   });
+
+  const total = await prisma.medicine.count({
+    where,
+  });
+
+  const totalPage = Math.ceil(total / limit);
+
+  return {
+    data: medicines,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPage,
+    },
+  };
 };
 
 const getMedicineById = async (id: string) => {
@@ -57,6 +111,19 @@ const getMedicineById = async (id: string) => {
       category: true,
     },
   });
+};
+
+const getMedicinesByCategory = async (categoryId: string) => {
+  const medicines = await prisma.medicine.findMany({
+    where: {
+      categoryId,
+    },
+    include: {
+      category: true,
+    },
+  });
+
+  return medicines;
 };
 
 const updateMedicine = async (
@@ -92,6 +159,7 @@ export const medicineService = {
   createMedicine,
   getAllMedicines,
   getMedicineById,
+  getMedicinesByCategory,
   updateMedicine,
   deleteMedicine,
 };

@@ -8,6 +8,10 @@ const router = express.Router();
 router.post("/", auth(Role.SELLER), medicineController.createMedicine);
 router.get("/", medicineController.getAllMedicines);
 router.get("/:id", medicineController.getMedicineById);
+router.get(
+  "/category-medicine/:categoryId",
+  medicineController.getMedicinesByCategory,
+);
 router.put("/seller/:id", auth(Role.SELLER), medicineController.updateMedicine);
 router.delete("/:id", auth(Role.SELLER), medicineController.deleteMedicine);
 

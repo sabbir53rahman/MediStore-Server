@@ -77,7 +77,7 @@ const updateQuantity = async (
 
   const cart = await getOrCreateCart(userId);
 
-  return prisma.cartItem.updateMany({
+  return prisma.cartItem.update({
     where: {
       id: itemId,
       cartId: cart.id,
@@ -89,7 +89,7 @@ const updateQuantity = async (
 const removeFromCart = async (userId: string, itemId: string) => {
   const cart = await getOrCreateCart(userId);
 
-  await prisma.cartItem.deleteMany({
+  await prisma.cartItem.delete({
     where: {
       id: itemId,
       cartId: cart.id,

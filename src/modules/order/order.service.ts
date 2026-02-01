@@ -1,40 +1,9 @@
 import { prisma } from "../../lib/prisma";
 import { OrderStatus } from "../../../generated/prisma/enums";
 
-const createOrder = async (userId: string, payload: any) => {
-  const { items, address } = payload;
-
-  let totalAmount = 0;
-
-  const orderItemsData = await Promise.all(
-    items.map(async (item: any) => {
-      const medicine = await prisma.medicine.findUnique({
-        where: { id: item.medicineId },
-      });
-
-      if (!medicine) {
-        throw new Error("Medicine not found");
-      }
-
-      totalAmount += medicine.price * item.quantity;
-
-      return {
-        medicineId: medicine.id,
-        quantity: item.quantity,
-        price: medicine.price,
-      };
-    }),
-  );
-
-  return prisma.order.create({
-    data: {
-      userId,
-      address,
-      totalAmount,
-      items: {
-        create: orderItemsData,
-      },
-    },
+const createOrder = async (userId: string) => {
+  const cart = await prisma.cart.findUnique({
+    where: { userId },
     include: {
       items: {
         include: {
@@ -43,6 +12,42 @@ const createOrder = async (userId: string, payload: any) => {
       },
     },
   });
+
+  if (!cart || cart.items.length === 0) {
+    throw new Error("Cart is empty");
+  }
+
+  let totalAmount = 0;
+
+  const orderItems = cart.items.map((item) => {
+    totalAmount += item.quantity * item.medicine.price;
+
+    return {
+      medicineId: item.medicineId,
+      quantity: item.quantity,
+      price: item.medicine.price,
+    };
+  });
+
+  const order = await prisma.order.create({
+    data: {
+      userId,
+      address: "DEFAULT_ADDRESS",
+      totalAmount,
+      items: {
+        create: orderItems,
+      },
+    },
+    include: {
+      items: true,
+    },
+  });
+
+  await prisma.cartItem.deleteMany({
+    where: { cartId: cart.id },
+  });
+
+  return order;
 };
 
 const getMyOrders = async (userId: string) => {

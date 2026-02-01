@@ -13,10 +13,6 @@ datasource db {
   provider = "postgresql"
 }
 
-// =====================
-// ENUMS
-// =====================
-
 enum Role {
   CUSTOMER
   SELLER
@@ -45,11 +41,12 @@ model Category {
 }
 
 model Medicine {
-  id          String  @id @default(uuid())
+  id          String   @id @default(uuid())
   name        String
   description String
   price       Float
   stock       Int
+  isFeatured  Boolean? @default(false)
   imageUrl    String?
 
   sellerId   String
@@ -66,10 +63,6 @@ model Medicine {
   @@index([sellerId])
   @@index([categoryId])
 }
-
-// =====================
-// CART
-// =====================
 
 model Cart {
   id     String     @id @default(uuid())
@@ -91,15 +84,11 @@ model CartItem {
   medicine Medicine @relation(fields: [medicineId], references: [id])
 }
 
-// =====================
-// ORDERS
-// =====================
-
 model Order {
   id          String      @id @default(uuid())
   userId      String
   status      OrderStatus @default(PLACED)
-  address     String
+  address     String?
   totalAmount Float
   user        User        @relation(fields: [userId], references: [id])
   items       OrderItem[]
@@ -113,15 +102,11 @@ model OrderItem {
   orderId    String
   medicineId String
   quantity   Int
-  price      Float // snapshot price
+  price      Float 
 
   order    Order    @relation(fields: [orderId], references: [id])
   medicine Medicine @relation(fields: [medicineId], references: [id])
 }
-
-// =====================
-// REVIEWS
-// =====================
 
 model Review {
   id      String  @id @default(uuid())
