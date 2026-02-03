@@ -45,6 +45,23 @@ const createReview = async (
   });
 };
 
+const getReviewsByMedicine = async (medicineId: string) => {
+  return prisma.review.findMany({
+    where: { medicineId },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+};
+
+const getAllReviews = async () => {
+  return prisma.review.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+};
+
 const updateReview = async (
   reviewId: string,
   userId: string,
@@ -80,6 +97,8 @@ const deleteReview = async (reviewId: string, userId: string) => {
 
 export const reviewService = {
   createReview,
+  getReviewsByMedicine,
+  getAllReviews,
   updateReview,
   deleteReview,
 };

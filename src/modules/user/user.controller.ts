@@ -90,30 +90,35 @@ const adminUpdateUser = async (
   }
 };
 
-const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
+const deleteUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
+    const currentUser = req.user;
 
-    const user = req.user;
-
-    if (!user) {
-      return res.status(401).json({
-        error: "Unothorized!",
-      });
+    if (!currentUser) {
+      return res.status(401).json({ error: "Unauthorized!" });
     }
 
-    if (user.role === Role.ADMIN) {
-      await userService.deleteUser(userId as string);
-      return res.status(200).json({
-        success: true,
-        message: "User deleted successfully",
-      });
+    if (currentUser.role !== Role.ADMIN) {
+      return res.status(403).json({ error: "Forbidden: Admins only" });
     }
-  } catch (e) {
-    res.status(400).json({
-      error: "Couldn't delete User.",
-      details: e,
-    });
+
+    if (currentUser.id === userId) {
+      return res
+        .status(400)
+        .json({ error: "You cannot delete your own account!" });
+    }
+
+    await userService.deleteUser(userId as string);
+
+    return res
+      .status(200)
+      .json({ success: true, message: "User deleted successfully" });
+  } catch (e: any) {
+    console.error("Delete user error:", e);
+    return res
+      .status(500)
+      .json({ error: "Couldn't delete user", details: e.message });
   }
 };
 

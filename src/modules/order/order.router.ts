@@ -6,6 +6,7 @@ import { orderController } from "./order.controller";
 const router = express.Router();
 
 router.post("/", auth(Role.CUSTOMER), orderController.createOrder);
+router.get("/", auth(Role.ADMIN), orderController.getAllOrders);
 router.get("/my-orders", auth(Role.CUSTOMER), orderController.getMyOrders);
 router.get("/:id", auth(Role.CUSTOMER), orderController.getOrderById);
 

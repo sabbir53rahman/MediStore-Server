@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { reviewService } from "./review.service";
 
+/* CREATE */
 const createReview = async (
   req: Request,
   res: Response,
@@ -26,6 +27,45 @@ const createReview = async (
   }
 };
 
+/* ✅ GET REVIEWS BY MEDICINE */
+const getReviewsByMedicine = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const medicineId = req.params.medicineId as string;
+
+    const result = await reviewService.getReviewsByMedicine(medicineId);
+
+    res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/* (Optional) ADMIN: GET ALL REVIEWS */
+const getAllReviews = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const result = await reviewService.getAllReviews();
+
+    res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/* UPDATE */
 const updateReview = async (
   req: Request,
   res: Response,
@@ -51,6 +91,7 @@ const updateReview = async (
   }
 };
 
+/* DELETE */
 const deleteReview = async (
   req: Request,
   res: Response,
@@ -73,6 +114,8 @@ const deleteReview = async (
 
 export const reviewController = {
   createReview,
+  getReviewsByMedicine,
+  getAllReviews,
   updateReview,
   deleteReview,
 };

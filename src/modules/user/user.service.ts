@@ -68,6 +68,10 @@ export const adminUpdateUserStatus = async (
 };
 
 const deleteUser = async (id: string) => {
+  await prisma.cart.deleteMany({
+    where: { userId: id },
+  });
+
   return prisma.user.delete({
     where: { id },
   });

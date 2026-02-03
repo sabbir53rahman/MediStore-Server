@@ -7,7 +7,11 @@ const router = express.Router();
 
 router.post("/:medicineId", auth(Role.CUSTOMER), reviewController.createReview);
 
-router.put("/:id", auth(Role.CUSTOMER), reviewController.updateReview);
+router.get("/medicine/:medicineId", reviewController.getReviewsByMedicine);
+
+router.get("/", auth(Role.ADMIN), reviewController.getAllReviews);
+
+router.put("/update/:id", auth(Role.CUSTOMER), reviewController.updateReview);
 
 router.delete("/:id", auth(Role.CUSTOMER), reviewController.deleteReview);
 

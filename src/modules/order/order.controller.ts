@@ -17,6 +17,24 @@ const createOrder = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+const getAllOrders = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const result = await orderService.getAllOrders();
+
+    res.status(200).json({
+      success: true,
+      message: "All orders retrieved successfully",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getMyOrders = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = req.user!;
@@ -98,6 +116,7 @@ const updateOrderStatus = async (
 
 export const orderController = {
   createOrder,
+  getAllOrders,
   getMyOrders,
   getOrderById,
   getSellerOrders,
